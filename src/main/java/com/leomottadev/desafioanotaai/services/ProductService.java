@@ -1,6 +1,7 @@
 package com.leomottadev.desafioanotaai.services;
 
 import com.leomottadev.desafioanotaai.domain.category.Category;
+import com.leomottadev.desafioanotaai.domain.category.exceptions.CategoryNotFoundException;
 import com.leomottadev.desafioanotaai.domain.product.Product;
 import com.leomottadev.desafioanotaai.domain.product.ProductDTO;
 import com.leomottadev.desafioanotaai.domain.product.ProductMapper;
@@ -29,12 +30,11 @@ public class ProductService {
     }
 
     public Product insert(ProductDTO productData) {
-        Category category = this.categoryService.getById(productData.getCategoryId())
+        this.categoryService.getById(productData.getCategoryId())
                 .orElseThrow(ProductNotFoundException::new);
         Product newProduct = new ProductMapper().toEntity(productData);
-        newProduct.setCategory(category);
         this.repository.save(newProduct);
-        this.snsService.publish(new MessageDTO(newProduct.getOwnerId()));
+        this.snsService.publish(new MessageDTO(newProduct.toString()));
         return newProduct;
     }
 
@@ -43,11 +43,11 @@ public class ProductService {
                 .orElseThrow(ProductNotFoundException::new);
         if(productData.getCategoryId() != null) {
             this.categoryService.getById(productData.getCategoryId())
-                    .ifPresent(product::setCategory);
+                    .orElseThrow(CategoryNotFoundException::new);
         }
         new ProductMapper().dataToProduct(product, productData);
         this.repository.save(product);
-        this.snsService.publish(new MessageDTO(product.getOwnerId()));
+        this.snsService.publish(new MessageDTO(product.toString()));
         return product;
     }
 

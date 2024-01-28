@@ -5,6 +5,8 @@ import com.leomottadev.desafioanotaai.domain.category.CategoryDTO;
 import com.leomottadev.desafioanotaai.domain.category.CategoryMapper;
 import com.leomottadev.desafioanotaai.domain.category.exceptions.CategoryNotFoundException;
 import com.leomottadev.desafioanotaai.repositories.CategoryRepository;
+import com.leomottadev.desafioanotaai.services.aws.AwsSnsService;
+import com.leomottadev.desafioanotaai.services.aws.MessageDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,10 +14,12 @@ import java.util.Optional;
 
 @Service
 public class CategoryService {
-    private CategoryRepository repository;
+    private final CategoryRepository repository;
+    private final AwsSnsService snsService;
 
-    public CategoryService(CategoryRepository repository) {
+    public CategoryService(CategoryRepository repository, AwsSnsService snsService) {
         this.repository = repository;
+        this.snsService = snsService;
     }
 
     public Optional<Category> getById(String id) {
@@ -29,6 +33,7 @@ public class CategoryService {
     public Category insert(CategoryDTO categoryData) {
         Category newCategory = new CategoryMapper().toEntity(categoryData);
         this.repository.save(newCategory);
+        this.snsService.publish(new MessageDTO(newCategory.toString()));
         return newCategory;
     }
 
@@ -37,6 +42,7 @@ public class CategoryService {
                 .orElseThrow(CategoryNotFoundException::new);
         category = new CategoryMapper().dataToCategory(category, categoryData);
         this.repository.save(category);
+        this.snsService.publish(new MessageDTO(category.toString()));
         return category;
     }
 

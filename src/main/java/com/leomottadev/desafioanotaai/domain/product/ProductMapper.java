@@ -29,6 +29,9 @@ public class ProductMapper {
         if(productData.getPrice() != null) {
             product.setPrice(productData.getPrice());
         }
+        if(productData.getCategoryId() != null) {
+            product.setCategory(productData.getCategoryId());
+        }
         return product;
     }
 }
