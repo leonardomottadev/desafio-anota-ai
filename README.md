@@ -4,7 +4,7 @@
 
 This API provides resources for managing categories and products.
 
-## Categories
+## Category
 
 Represents a category for classifying products.
 
@@ -23,13 +23,15 @@ Represents a category for classifying products.
   "ownerId": "123"
 }
 ```
-## Products
-Represents a category for classifying products.
+## Product
+Represents an item available in the restaurant menu.
 ### Attributes
-- `id` (String): Category ID.
-- `title` (String): Category title.
-- `description` (String): Category description.
-- `ownerId` (String): Owner ID of the category.
+- `id` (String): Product ID.
+- `title` (String): Product title.
+- `description` (String): Product description.
+- `ownerId` (String): Owner ID of the product.
+- `price` (Integer): Product price.
+- `category` (String): ID of the category to which the product belongs.
 #### Example JSON Object
 ```
 {
